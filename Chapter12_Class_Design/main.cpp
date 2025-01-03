@@ -3,6 +3,7 @@
 
 using namespace Graph_lib;
 
+// Ex 1: Define Smiley and Frowny
 struct Smiley : Circle {
     Smiley(Point c, int r)
         : Circle(c, r),
@@ -78,6 +79,7 @@ void display_smiley_frowney() {
     win.wait_for_button();
 }
 
+// Ex 3: Define an abstract class
 class AbstractClass {
 public:
     virtual void func() =0;     // pure virtual function, so it is an abstract class
@@ -96,6 +98,7 @@ private:
     int y;
 };
 
+// Ex 4: Define Immobile_Circle
 struct Immobile_Circle : Shape {
     Immobile_Circle(Point p, int rr)	// center and radius
         :r{ rr } {
@@ -138,6 +141,7 @@ void move_immobile_circle() {
     win.wait_for_button();
 }
 
+// Ex 5: Define Striped_rectangle
 struct Striped_rectangle : Rectangle {
     Striped_rectangle(Point p, int w, int h, Color clr)
         : Rectangle{ p, w, h }
@@ -192,7 +196,89 @@ void display_striped_rectangle() {
     win.wait_for_button();
 }
 
+// Ex 6: Define Striped_circle
+struct Striped_circle : Circle {
+    Striped_circle(Point center, int r, Color color)
+        : Circle{center, r}
+    {
+        int x = center.x;
+        int y = center.y;
+        double step = 1/(8*M_PI);
+        for (double d=0; d<M_PI; d+=step) {
+            ls.add(Point{static_cast<int>(x + (r-1) * cos(M_PI - d)),
+                         static_cast<int>(y + r * sin(M_PI - d))},
+                   Point{ static_cast<int>(x + (r-1) * cos(d)),
+                         static_cast<int>(y + r * sin(d))});
+
+            ls.add(Point{static_cast<int>(x - (r-1) * cos(M_PI - d)),
+                         static_cast<int>(y - r * sin(M_PI - d))},
+                   Point{ static_cast<int>(x - (r-1) * cos(d)),
+                         static_cast<int>(y - r * sin(d))});
+        }
+        ls.set_color(color);
+    }
+
+    void draw_specifics(Painter& painter) const override {
+        Circle::draw_specifics(painter);
+        ls.draw(painter);
+    }
+
+private:
+    Lines ls;
+};
+
+void display_striped_circle() {
+    Application app;
+    Simple_window win({20, 20}, 600, 400, "Main window");
+
+    // Class-defined striped circles
+    Striped_circle sc{ Point{200, 205}, 100, Color::blue };
+    win.attach(sc);
+
+    Striped_circle sc2{ Point {400, 195}, 100, Color::red };
+    win.attach(sc2);
+
+    // Manually build striped circle
+    int x = 300;
+    int y = 200;
+    int r = 100;
+
+    Circle c{ Point{x,y}, r};
+    win.attach(c);
+
+    Lines ls;
+    ls.add(Point{static_cast<int>(x + r * cos(M_PI - 0)),
+                 static_cast<int>(y + r * sin(M_PI - 0))},
+           Point{ static_cast<int>(x + r * cos(0)),
+                 static_cast<int>(y + r * sin(0))});
+    ls.add(Point{static_cast<int>(x + r * cos(M_PI - 1/(8*M_PI))),
+                 static_cast<int>(y + r * sin(M_PI - 1/(8*M_PI)))},
+           Point{ static_cast<int>(x + r * cos(1/(8*M_PI))),
+                 static_cast<int>(y + r * sin(1/(8*M_PI)))});
+    ls.add(Point{static_cast<int>(x + r * cos(M_PI - 2/(8*M_PI))),
+                 static_cast<int>(y + r * sin(M_PI - 2/(8*M_PI)))},
+           Point{ static_cast<int>(x + r * cos(2/(8*M_PI))),
+                 static_cast<int>(y + r * sin(2/(8*M_PI)))});
+    ls.set_color(Color::green);
+
+    double step = 1/(8*M_PI);
+    for (double d=0; d<M_PI; d+=step) {
+        ls.add(Point{static_cast<int>(x + (r-1) * cos(M_PI - d)),
+                     static_cast<int>(y + r * sin(M_PI - d))},
+               Point{ static_cast<int>(x + (r-1) * cos(d)),
+                     static_cast<int>(y + r * sin(d))});
+
+        ls.add(Point{static_cast<int>(x - (r-1) * cos(M_PI - d)),
+                     static_cast<int>(y - r * sin(M_PI - d))},
+               Point{ static_cast<int>(x - (r-1) * cos(d)),
+                     static_cast<int>(y - r * sin(d))});
+    }
+    win.attach(ls);
+
+    win.wait_for_button();
+}
+
 int main(int /*argc*/, char * /*argv*/[])
 {
-    display_striped_rectangle();
+    display_striped_circle();
 }
